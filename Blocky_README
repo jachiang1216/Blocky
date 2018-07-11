@@ -1,0 +1,5 @@
+This is a Python Game built using version Python 3.6 using PyGame. 
+Make Sure that you have the Pygame module imported before running the main program
+
+Information of Blocky:
+A Block Platform Game. Reach the Red Block to continue to the next level! Be wary of enemies and holes
