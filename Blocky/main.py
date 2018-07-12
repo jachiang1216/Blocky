@@ -131,7 +131,7 @@ class Game:
         if not self.running:
             return
         self.window.fill(WHITE)
-        self.text("You Beat the Game. Nigger", 50, BLACK, WIDTH / 2, 200)
+        self.text("You Beat the Game. \(^.^)/", 50, BLACK, WIDTH / 2, 200)
         self.text("Press any Key to Exit", 20, BLACK, WIDTH / 2, HEIGHT / 2 + 50)
         pygame.display.update()
         self.wait()
