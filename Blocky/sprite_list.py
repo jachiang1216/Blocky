@@ -1,6 +1,9 @@
 import pygame
 from properties import *
 
+global jumping
+jumping = False
+
 # Sprite Classes
 
 class Player(pygame.sprite.Sprite):
@@ -17,6 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.vel_y = 0
         self.acc_x = 0
         self.gravity = 1
+        self.jumping = False
 
     def update(self):
 
@@ -34,12 +38,16 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_RIGHT]:
             self.acc_x = ACC
 
-        if keys[pygame.K_SPACE]:
-            self.rect.y += 1
-            collision = pygame.sprite.spritecollide(self, self.Game.all_platforms, False)
-            self.rect.y -= 1
-            if collision:
-                self.vel_y = -JUMP
+        if pygame.KEYDOWN:
+            if keys[pygame.K_SPACE]:
+                self.rect.y += 1
+                collision = pygame.sprite.spritecollide(self, self.Game.all_platforms, False)
+                self.rect.y -= 1
+                if collision and not self.jumping:
+                    self.jumping = True
+                    self.vel_y = -JUMP
+                    self.Game.jump_sound.play()
+
 
         self.acc_x += self.vel_x * FRICTION
         self.vel_x += self.acc_x
@@ -47,7 +55,6 @@ class Player(pygame.sprite.Sprite):
 
         self.vel_y += self.gravity
         self.rect.y += self.vel_y + 0.5 * self.gravity
-
 
 
 class Platform(pygame.sprite.Sprite):
@@ -59,6 +66,7 @@ class Platform(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
 
 class Wall(pygame.sprite.Sprite):
 
@@ -80,3 +88,27 @@ class Win(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+
+class PowerUp(pygame.sprite.Sprite):
+
+    def __init__(self, Game, x, y):
+        self.Game = Game
+        pygame.sprite.Sprite.__init__(self)
+        self.image = self.Game.spritesheet.getImage(432 ,288, 70, 70)
+        self.image.set_colorkey(BLACK)
+        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+class SpriteSheet:
+
+    def __init__(self, file):
+        self.spritesheet = pygame.image.load(file).convert()
+
+    def getImage(self, x, y, w, h):
+        image = pygame.Surface((w, h))
+        image.blit(self.spritesheet, (0, 0), (x, y, w, h))
+        return image
+
