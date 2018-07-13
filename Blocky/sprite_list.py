@@ -1,5 +1,6 @@
 import pygame
 from properties import *
+import random
 
 global jumping
 jumping = False
@@ -95,12 +96,81 @@ class PowerUp(pygame.sprite.Sprite):
     def __init__(self, Game, x, y):
         self.Game = Game
         pygame.sprite.Sprite.__init__(self)
-        self.image = self.Game.spritesheet.getImage(432 ,288, 70, 70)
+        self.image = self.Game.spritesheet.getImage(432, 288, 70, 70)
         self.image.set_colorkey(BLACK)
         self.image = pygame.transform.scale(self.image, (30, 30))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+class Enemies(pygame.sprite.Sprite):
+
+    def __init__(self, Game, x, y):
+        self.Game = Game
+        pygame.sprite.Sprite.__init__(self)
+        self.load_images()
+        self.x = x
+        self.y = y
+        self.current_frame = 0
+        self.last_update = 0
+        self.vel_x = 0
+        self.direction = random.choice(["Left", "Right"])
+        self.update()
+
+    def update(self):
+        now = pygame.time.get_ticks()
+
+        if now - self.last_update > 350:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.walking_frames_l)
+
+            if self.direction is "Left":
+                self.vel_x = -ENEMY_SPEED
+                self.x += self.vel_x
+                self.image = self.walking_frames_l[self.current_frame]
+            else:
+                self.vel_x = ENEMY_SPEED
+                self.x += self.vel_x
+                self.image = self.walking_frames_r[self.current_frame]
+
+            self.rect = self.image.get_rect()
+            self.rect.x = self.x
+            self.rect.y = self.y
+
+            # Enemy Collision Check with Platform
+            self.rect.y += 1
+            if self.direction is "Left":
+                self.rect.x -= 30
+                collision = pygame.sprite.spritecollide(self, self.Game.all_platforms, False)
+                self.rect.x += 30
+            else:
+                self.rect.x += 30
+                collision = pygame.sprite.spritecollide(self, self.Game.all_platforms, False)
+                self.rect.x -= 30
+            self.rect.y -= 1
+            if not collision:
+                if self.direction is "Left":
+                    self.direction = "Right"
+                    self.vel_x *= -1
+                else:
+                    self.direction = "Left"
+                    self.vel_x *= -1
+                self.rect.x += self.vel_x
+
+
+
+
+
+    def load_images(self):
+
+        self.walking_frames_l = [pygame.transform.scale(self.Game.enemy_spritesheet.getImage(52, 125, 50, 28), (30, 20)),
+                                 pygame.transform.scale(self.Game.enemy_spritesheet.getImage(0, 125, 51, 26), (30, 20))]
+        for frame in self.walking_frames_l:
+            frame.set_colorkey(BLACK)
+        self.walking_frames_r = [pygame.transform.scale(pygame.transform.flip(self.Game.enemy_spritesheet.getImage(52, 125, 50, 28), True, False), (30, 20)),
+                                 pygame.transform.scale(pygame.transform.flip(self.Game.enemy_spritesheet.getImage(0, 125, 51, 26), True, False), (30, 20))]
+        for frame in self.walking_frames_r:
+            frame.set_colorkey(BLACK)
 
 class SpriteSheet:
 
