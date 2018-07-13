@@ -25,6 +25,7 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.all_platforms = pygame.sprite.Group()
         self.all_powerups = pygame.sprite.Group()
+        self.all_enemies = pygame.sprite.Group()
         self.all_walls = pygame.sprite.Group()
         self.all_wins = pygame.sprite.Group()
 
@@ -42,6 +43,7 @@ class Game:
         # Loading Images:
         img_dir = path.join(self.dir, 'img')
         self.spritesheet = sprite_list.SpriteSheet(path.join(img_dir, SPRITESHEET))
+        self.enemy_spritesheet = sprite_list.SpriteSheet(path.join(img_dir, ENEMY_SPRITESHEET))
 
 
     def new(self):  # Start a new Game
@@ -68,6 +70,11 @@ class Game:
             self.all_sprites.add(p)
             self.all_powerups.add(p)
 
+        for i in (Enemies_Array[self.level-1]):
+            p = sprite_list.Enemies(self, *i)
+            self.all_sprites.add(p)
+            self.all_enemies.add(p)
+
         self.run()
 
     def run(self):
@@ -83,6 +90,7 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.all_enemies.update()
         collision = pygame.sprite.spritecollide(self.player, self.all_platforms, False)
         if collision:
             if self.player.vel_y > 0:
@@ -106,6 +114,10 @@ class Game:
             self.player.vel_y = -25
             self.spring_sound.play()
 
+        enemy_collision = pygame.sprite.spritecollide(self.player, self.all_enemies, False)
+        if enemy_collision:
+            self.kill()
+            self.playing = False
 
         # Game Over
         if self.player.rect.top > HEIGHT:
@@ -141,19 +153,22 @@ class Game:
         self.all_sprites.draw(self.window)
         self.all_platforms.draw(self.window)
         self.all_walls.draw(self.window)
+        self.all_enemies.draw(self.window)
         self.all_wins.draw(self.window)
 
         self.text("Level "+str(self.level), 22, BLACK, WIDTH/2, 15)
         # Always do this last after drawing everything
         pygame.display.update()
 
-    def kill(self): # Kill the Platforms/Walls/Win Condition
+    def kill(self):  # Kill the Platforms/Walls/Win Condition
         self.all_platforms.empty()
         self.all_platforms.add()
         self.all_walls.empty()
         self.all_walls.add()
         self.all_powerups.empty()
         self.all_powerups.add()
+        self.all_enemies.empty()
+        self.all_enemies.add()
         self.all_sprites.empty()
         self.all_sprites.add()
         self.win.kill()
