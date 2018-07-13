@@ -1,8 +1,14 @@
+2018/07/13:
+  Introduced Enemies into the Game
+    # New Enemy: Purple Slime
+  Level 4 Added
+
 2018/07/12:
-  Added Springs
+  New PowerUp: Springs
   Introduced Music BGM and Sounds:
     # HappyTunes.ogg File taken from https://opengameart.org/content/happy-tune. Author: syncopika
   Level 3 Added
 
 2018/07/11: 
   Initial Release of Blocky Platform Game
+  Levels 1 and 2
