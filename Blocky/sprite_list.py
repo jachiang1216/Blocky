@@ -128,10 +128,12 @@ class Enemies(pygame.sprite.Sprite):
                 self.vel_x = -ENEMY_SPEED
                 self.x += self.vel_x
                 self.image = self.walking_frames_l[self.current_frame]
+                self.mask = pygame.mask.from_surface(self.image)
             else:
                 self.vel_x = ENEMY_SPEED
                 self.x += self.vel_x
                 self.image = self.walking_frames_r[self.current_frame]
+                self.mask = pygame.mask.from_surface(self.image)
 
             self.rect = self.image.get_rect()
             self.rect.x = self.x
